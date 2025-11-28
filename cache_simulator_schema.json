@@ -1,0 +1,250 @@
+{
+  "simulator": {
+    "name": "Cache Simulator - Computer Architecture Teaching Tool",
+    "url": "https://tomfoolery.chn.tum.de/cache_simulator.html"
+  },
+  "inputs": {
+    "cache_configuration": [
+      {
+        "id": "cache_size_bytes",
+        "label": "Cache Size (bytes)",
+        "type": "number",
+        "unit": "bytes",
+        "category": "cache_configuration",
+        "description": "Total capacity of the cache in bytes."
+      },
+      {
+        "id": "block_size_bytes",
+        "label": "Block Size (bytes)",
+        "type": "number",
+        "unit": "bytes",
+        "category": "cache_configuration",
+        "description": "Size of each cache block (cache line) in bytes."
+      },
+      {
+        "id": "associativity",
+        "label": "Associativity",
+        "type": "enum",
+        "category": "cache_configuration",
+        "options": [
+          "Direct Mapped (1-way)",
+          "2-way Set Associative",
+          "4-way Set Associative",
+          "8-way Set Associative",
+          "Fully Associative"
+        ],
+        "description": "Determines the mapping between memory blocks and cache sets."
+      },
+      {
+        "id": "replacement_policy",
+        "label": "Replacement Policy",
+        "type": "enum",
+        "category": "cache_configuration",
+        "options": [
+          "Least Recently Used (LRU)",
+          "First-In-First-Out (FIFO)",
+          "Random Replacement"
+        ],
+        "description": "Policy used to choose which cache line to evict on a miss."
+      }
+    ],
+    "power_consumption_parameters": [
+      {
+        "id": "static_power_per_kb",
+        "label": "Static Power per KB (mW/KB)",
+        "type": "number",
+        "unit": "mW/KB",
+        "category": "power",
+        "description": "Leakage/static power associated with each KB of cache."
+      },
+      {
+        "id": "dynamic_read_power",
+        "label": "Dynamic Read Power (mW/access)",
+        "type": "number",
+        "unit": "mW/access",
+        "category": "power",
+        "description": "Dynamic power consumed for each read access to the cache."
+      },
+      {
+        "id": "dynamic_write_power",
+        "label": "Dynamic Write Power (mW/access)",
+        "type": "number",
+        "unit": "mW/access",
+        "category": "power",
+        "description": "Dynamic power consumed for each write access to the cache."
+      },
+      {
+        "id": "miss_penalty_power",
+        "label": "Miss Penalty Power (mW/miss)",
+        "type": "number",
+        "unit": "mW/miss",
+        "category": "power",
+        "description": "Additional power cost associated with each cache miss (e.g., going to main memory)."
+      },
+      {
+        "id": "operating_voltage",
+        "label": "Operating Voltage (V)",
+        "type": "number",
+        "unit": "V",
+        "category": "power",
+        "description": "Supply voltage at which the cache and CPU operate."
+      }
+    ],
+    "memory_access_sequence": [
+      {
+        "id": "input_memory_addresses",
+        "label": "Input Memory Addresses",
+        "type": "multiline_text",
+        "format": "hexadecimal",
+        "example": [
+          "0x100",
+          "0x104",
+          "0x108",
+          "0x10C",
+          "0x110",
+          "0x114",
+          "0x100",
+          "0x104",
+          "0x118",
+          "0x11C",
+          "0x100",
+          "0x120"
+        ],
+        "category": "memory_access",
+        "description": "Memory addresses to be accessed; one hexadecimal address per line."
+      },
+      {
+        "id": "access_type",
+        "label": "Access Type",
+        "type": "enum",
+        "category": "memory_access",
+        "options": [
+          "Read Only",
+          "Write Only",
+          "Mixed (Read/Write)"
+        ],
+        "description": "Determines whether the access sequence consists of only reads, only writes, or a mix."
+      }
+    ],
+    "timing_and_frequency": [
+      {
+        "id": "clock_frequency_mhz",
+        "label": "Clock Frequency (MHz)",
+        "type": "number",
+        "unit": "MHz",
+        "category": "timing",
+        "description": "Processor or core clock frequency used for timing calculations."
+      },
+      {
+        "id": "frequency_scaling_mode",
+        "label": "Frequency Scaling Mode",
+        "type": "enum",
+        "category": "timing",
+        "options": [
+          "Fixed Frequency",
+          "Dynamic Frequency Scaling"
+        ],
+        "description": "Whether the clock frequency stays constant or can change during the simulation."
+      }
+    ],
+    "controls": [
+      {
+        "id": "run_simulation",
+        "label": "Run Simulation",
+        "type": "action_button",
+        "category": "control",
+        "description": "Executes the cache simulation using the current configuration and memory access sequence."
+      },
+      {
+        "id": "reset",
+        "label": "Reset",
+        "type": "action_button",
+        "category": "control",
+        "description": "Resets all parameters and clears any previous results."
+      },
+      {
+        "id": "load_example_data",
+        "label": "Load Example Data",
+        "type": "action_button",
+        "category": "control",
+        "description": "Loads a predefined memory access trace and configuration example."
+      }
+    ]
+  },
+  "outputs": {
+    "results_section": {
+      "id": "simulation_results",
+      "label": "Simulation Results",
+      "description": "Container where the simulator displays results after running."
+    },
+    "metrics": [
+      {
+        "id": "cache_hits",
+        "label": "Cache Hits",
+        "type": "number",
+        "category": "performance",
+        "status": "inferred",
+        "description": "Number of memory accesses that were served from the cache."
+      },
+      {
+        "id": "cache_misses",
+        "label": "Cache Misses",
+        "type": "number",
+        "category": "performance",
+        "status": "inferred",
+        "description": "Number of memory accesses that missed in the cache and required lower-level memory access."
+      },
+      {
+        "id": "hit_rate",
+        "label": "Hit Rate",
+        "type": "percentage",
+        "category": "performance",
+        "status": "inferred",
+        "description": "Fraction of accesses that hit in the cache."
+      },
+      {
+        "id": "miss_rate",
+        "label": "Miss Rate",
+        "type": "percentage",
+        "category": "performance",
+        "status": "inferred",
+        "description": "Fraction of accesses that miss in the cache."
+      },
+      {
+        "id": "total_accesses",
+        "label": "Total Accesses",
+        "type": "number",
+        "category": "performance",
+        "status": "inferred",
+        "description": "Total number of memory operations performed in the trace."
+      },
+      {
+        "id": "total_energy",
+        "label": "Total Energy",
+        "type": "number",
+        "unit": "mJ",
+        "category": "power",
+        "status": "inferred",
+        "description": "Total energy consumption computed from static and dynamic power parameters and timing."
+      },
+      {
+        "id": "average_power",
+        "label": "Average Power",
+        "type": "number",
+        "unit": "mW",
+        "category": "power",
+        "status": "inferred",
+        "description": "Average power during the simulated execution window."
+      },
+      {
+        "id": "execution_time",
+        "label": "Execution Time",
+        "type": "number",
+        "unit": "ns",
+        "category": "timing",
+        "status": "inferred",
+        "description": "Estimated time to execute the memory access sequence given clock frequency and miss penalties."
+      }
+    ]
+  }
+}
