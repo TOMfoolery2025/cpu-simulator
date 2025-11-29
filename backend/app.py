@@ -9,7 +9,6 @@ from simulator import ArchConfig, simulate
 
 app = Flask(__name__, static_folder="../frontend/dist", static_url_path="/")
 
-# Secret key for sessions (in production, load from env)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-key")
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///arch_sim.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False

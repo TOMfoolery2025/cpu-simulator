@@ -1,4 +1,3 @@
-// frontend/src/pages/SimulatorPage.jsx
 import React, { useEffect, useState } from "react";
 import api from "../api";
 import ConfigForm from "../components/ConfigForm";

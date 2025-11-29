@@ -1,4 +1,3 @@
-// frontend/src/components/CPUVisualization.jsx
 import React, { useEffect, useRef, useState } from "react";
 
 const CPUVisualization = ({ results }) => {
@@ -6,7 +5,6 @@ const CPUVisualization = ({ results }) => {
   const perf = results?.performance_index ?? 1;
   const amat = results?.amat_ns ?? 80;
 
-  // Map to simple speed factors (used as multipliers in the animation)
   const inflowSpeed = Math.max(
     0.12,
     Math.min(0.45, 0.35 / Math.max(1.0, amat / 40.0))
@@ -23,15 +21,15 @@ const CPUVisualization = ({ results }) => {
 
   // Layout helpers (SVG viewBox is 0..100 x 0..40)
   const inflowPath = [
-    { x: 75, y: 12 }, // main memory
-    { x: 55, y: 12 }, // bus (right side)
-    { x: 35, y: 18 }, // CPU container entry
+    { x: 75, y: 12 }, 
+    { x: 55, y: 12 }, 
+    { x: 35, y: 18 }, 
   ];
 
   const outflowPath = [
-    { x: 25, y: 25 }, // CPU container exit
-    { x: 45, y: 28 }, // bus (left/lower)
-    { x: 75, y: 20 }, // back into main memory
+    { x: 25, y: 25 }, 
+    { x: 45, y: 28 }, 
+    { x: 75, y: 20 }, 
   ];
 
   const interpolateOnSegments = (segments, t) => {
@@ -55,11 +53,11 @@ const CPUVisualization = ({ results }) => {
     const start = performance.now();
 
     const animate = (time) => {
-      const elapsed = (time - start) / 1000; // seconds
+      const elapsed = (time - start) / 1000;
 
       // Smooth looping values in [0,1]
       const inflowT = (elapsed * inflowSpeed) % 1;
-      const outflowT = ((elapsed * outflowSpeed) + 0.5) % 1; // phase-shifted
+      const outflowT = ((elapsed * outflowSpeed) + 0.5) % 1; 
 
       if (inflowDotRef.current) {
         const { x, y } = interpolateOnSegments(inflowPath, inflowT);
@@ -81,7 +79,6 @@ const CPUVisualization = ({ results }) => {
   }, [inflowSpeed, outflowSpeed]);
 
   const showHover = (label, description, x, y) => {
-    // x,y are in viewBox coordinates; tooltip is positioned relative to the SVG
     setHoverInfo({
       label,
       description,
@@ -120,7 +117,6 @@ const CPUVisualization = ({ results }) => {
           {/* Background to keep layout airy */}
           <rect x="0" y="0" width="100" height="40" fill="transparent" />
 
-          {/* === CPU GROUP (LEFT, ~30%) === */}
           <g
             onMouseEnter={() =>
               showHover(
@@ -308,7 +304,6 @@ const CPUVisualization = ({ results }) => {
             ))}
           </g>
 
-          {/* === MEMORY (RIGHT, ~20%) === */}
           {/* Main memory */}
           <g
             onMouseEnter={() =>
