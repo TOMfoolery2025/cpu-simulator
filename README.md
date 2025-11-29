@@ -3,6 +3,9 @@
 A lightweight, interactive CPU simulation web app designed to help **students**, **educators**, and **tech enthusiasts** understand how hardware design choices influence performance, power, and efficiency.  
 The goal is to make complex CPU architecture concepts **visual**, **intuitive**, and **fun to explore**.
 
+## Live Demo
+https://drive.google.com/drive/folders/1XRvAlQ9JJipV5ZgcTFK062V1r8XoVPlr?usp=share_link
+
 ## 🎯 Target Audience
 - **Computer architecture students** learning cache, pipeline, and branch prediction basics  
 - **Educators** who need a visual tool for lectures and labs  
