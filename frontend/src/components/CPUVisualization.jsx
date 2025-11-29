@@ -1,35 +1,43 @@
+// frontend/src/components/CPUVisualization.jsx
 import React, { useEffect, useRef, useState } from "react";
+
+const INFLOW_DOTS = 10;
+const OUTFLOW_DOTS = 10;
 
 const CPUVisualization = ({ results }) => {
   // Use performance/AMAT to modulate animation speed a bit (higher perf → faster animation)
   const perf = results?.performance_index ?? 1;
   const amat = results?.amat_ns ?? 80;
 
+  // Map to simple speed factors (used as multipliers in the animation)
   const inflowSpeed = Math.max(
     0.12,
-    Math.min(0.45, 0.35 / Math.max(1.0, amat / 40.0))
+    Math.min(0.35, 0.20 / Math.max(1.0, amat / 40.0))
   );
   const outflowSpeed = Math.max(
     0.12,
     Math.min(0.45, 0.35 / Math.max(0.6, 2.5 - perf * 0.4))
   );
 
-  const inflowDotRef = useRef(null);
-  const outflowDotRef = useRef(null);
+  // Multiple dots for smoother flow
+  const inflowDotsRef = useRef([]);
+  const outflowDotsRef = useRef([]);
 
   const [hoverInfo, setHoverInfo] = useState(null);
 
   // Layout helpers (SVG viewBox is 0..100 x 0..40)
   const inflowPath = [
-    { x: 75, y: 12 }, 
-    { x: 55, y: 12 }, 
-    { x: 35, y: 18 }, 
+    { x: 64, y: 12 }, // main memory
+    { x: 47.8, y: 12 }, // bus (right side)
+    { x: 47.8, y: 23 }, // CPU container entry
+    { x: 34, y: 23 },
   ];
 
   const outflowPath = [
-    { x: 25, y: 25 }, 
-    { x: 45, y: 28 }, 
-    { x: 75, y: 20 }, 
+    { x: 34, y: 26 }, // CPU container exit
+    { x: 52.2, y: 26 }, // bus (left/lower)
+    { x: 52.2, y: 15 }, // back into main memory
+    { x: 64, y: 15 },
   ];
 
   const interpolateOnSegments = (segments, t) => {
@@ -47,29 +55,35 @@ const CPUVisualization = ({ results }) => {
     };
   };
 
-  // Animation loop for inflow (blue) and outflow (red)
+  // Animation loop for inflow (blue) and outflow (red) dots
   useEffect(() => {
     let frameId;
     const start = performance.now();
 
     const animate = (time) => {
-      const elapsed = (time - start) / 1000;
+      const elapsed = (time - start) / 1000; // seconds
 
-      // Smooth looping values in [0,1]
-      const inflowT = (elapsed * inflowSpeed) % 1;
-      const outflowT = ((elapsed * outflowSpeed) + 0.5) % 1; 
+      // Smooth looping base values in [0,1]
+      const inflowBase = (elapsed * inflowSpeed) % 1;
+      const outflowBase = ((elapsed * outflowSpeed) + 0.5) % 1; // phase-shifted
 
-      if (inflowDotRef.current) {
-        const { x, y } = interpolateOnSegments(inflowPath, inflowT);
-        inflowDotRef.current.setAttribute("cx", x.toString());
-        inflowDotRef.current.setAttribute("cy", y.toString());
-      }
+      // Inflow dots: Memory -> Bus -> CPU
+      inflowDotsRef.current.forEach((dot, index) => {
+        if (!dot) return;
+        const t = (inflowBase + index / INFLOW_DOTS) % 1;
+        const { x, y } = interpolateOnSegments(inflowPath, t);
+        dot.setAttribute("cx", x.toString());
+        dot.setAttribute("cy", y.toString());
+      });
 
-      if (outflowDotRef.current) {
-        const { x, y } = interpolateOnSegments(outflowPath, outflowT);
-        outflowDotRef.current.setAttribute("cx", x.toString());
-        outflowDotRef.current.setAttribute("cy", y.toString());
-      }
+      // Outflow dots: CPU -> Bus -> Memory
+      outflowDotsRef.current.forEach((dot, index) => {
+        if (!dot) return;
+        const t = (outflowBase + index / OUTFLOW_DOTS) % 1;
+        const { x, y } = interpolateOnSegments(outflowPath, t);
+        dot.setAttribute("cx", x.toString());
+        dot.setAttribute("cy", y.toString());
+      });
 
       frameId = requestAnimationFrame(animate);
     };
@@ -79,6 +93,7 @@ const CPUVisualization = ({ results }) => {
   }, [inflowSpeed, outflowSpeed]);
 
   const showHover = (label, description, x, y) => {
+    // x,y are in viewBox coordinates; tooltip is positioned relative to the SVG
     setHoverInfo({
       label,
       description,
@@ -91,10 +106,9 @@ const CPUVisualization = ({ results }) => {
 
   return (
     <div className="cpu-viz-card">
-      <h2 className="cpu-viz-title">CPU Dataflow Visualization</h2>
+      <h2 className="cpu-viz-title">Computer Architecture</h2>
       <p className="cpu-viz-subtitle">
-        Bytes flowing: <strong>Memory → Bus → CPU</strong> (blue) and{" "}
-        <strong>CPU → Bus → Memory</strong> (red)
+        Visualizing: <strong>Memory → Bus → CPU</strong>
       </p>
 
       <div
@@ -117,6 +131,7 @@ const CPUVisualization = ({ results }) => {
           {/* Background to keep layout airy */}
           <rect x="0" y="0" width="100" height="40" fill="transparent" />
 
+          {/* === CPU GROUP (LEFT, ~30%) === */}
           <g
             onMouseEnter={() =>
               showHover(
@@ -144,8 +159,8 @@ const CPUVisualization = ({ results }) => {
               x="7"
               y="9"
               fontSize="2.5"
-              fill="#4b5563"
               fontWeight="600"
+              className="cpu-viz-text-main"
             >
               CPU
             </text>
@@ -173,7 +188,12 @@ const CPUVisualization = ({ results }) => {
                 stroke="rgba(148, 163, 184, 0.9)"
                 strokeWidth="0.4"
               />
-              <text x="8" y="15" fontSize="2" fill="#111827">
+              <text
+                x="8"
+                y="15"
+                fontSize="2"
+                className="cpu-viz-text-main"
+              >
                 ALU
               </text>
             </g>
@@ -201,7 +221,12 @@ const CPUVisualization = ({ results }) => {
                 stroke="rgba(148, 163, 184, 0.9)"
                 strokeWidth="0.4"
               />
-              <text x="8" y="25" fontSize="2" fill="#111827">
+              <text
+                x="8"
+                y="25"
+                fontSize="2"
+                className="cpu-viz-text-main"
+              >
                 Registers
               </text>
             </g>
@@ -229,10 +254,20 @@ const CPUVisualization = ({ results }) => {
                 stroke="rgba(148, 163, 184, 0.9)"
                 strokeWidth="0.4"
               />
-              <text x="22" y="15" fontSize="2" fill="#111827">
+              <text
+                x="22"
+                y="15"
+                fontSize="2"
+                className="cpu-viz-text-main"
+              >
                 Control
               </text>
-              <text x="22" y="17" fontSize="2" fill="#111827">
+              <text
+                x="22"
+                y="17"
+                fontSize="2"
+                className="cpu-viz-text-main"
+              >
                 Unit
               </text>
             </g>
@@ -260,7 +295,12 @@ const CPUVisualization = ({ results }) => {
                 stroke="rgba(148, 163, 184, 0.9)"
                 strokeWidth="0.4"
               />
-              <text x="22" y="25" fontSize="2" fill="#111827">
+              <text
+                x="22"
+                y="25"
+                fontSize="2"
+                className="cpu-viz-text-main"
+              >
                 Cache
               </text>
             </g>
@@ -282,8 +322,8 @@ const CPUVisualization = ({ results }) => {
               x="47"
               y="7"
               fontSize="2.3"
-              fill="#4b5563"
               fontWeight="600"
+              className="cpu-viz-text-main"
             >
               Bus
             </text>
@@ -304,6 +344,7 @@ const CPUVisualization = ({ results }) => {
             ))}
           </g>
 
+          {/* === MEMORY (RIGHT, ~20%) === */}
           {/* Main memory */}
           <g
             onMouseEnter={() =>
@@ -331,12 +372,17 @@ const CPUVisualization = ({ results }) => {
               x="67"
               y="11"
               fontSize="2.3"
-              fill="#111827"
               fontWeight="600"
+              className="cpu-viz-text-main"
             >
               Memory
             </text>
-            <text x="67" y="13.5" fontSize="1.8" fill="#4b5563">
+            <text
+              x="67"
+              y="13.5"
+              fontSize="1.8"
+              className="cpu-viz-text-muted"
+            >
               (RAM)
             </text>
           </g>
@@ -345,7 +391,7 @@ const CPUVisualization = ({ results }) => {
           <g
             onMouseEnter={() =>
               showHover(
-                "External Memory",
+                "External Storage",
                 "Slower, larger storage such as SSDs, HDDs, or external devices.",
                 75,
                 27
@@ -368,54 +414,52 @@ const CPUVisualization = ({ results }) => {
               x="67"
               y="27"
               fontSize="2.3"
-              fill="#111827"
               fontWeight="600"
+              className="cpu-viz-text-main"
             >
               External
             </text>
-            <text x="67" y="29.5" fontSize="1.8" fill="#4b5563">
-              Memory
+            <text
+              x="67"
+              y="29.5"
+              fontSize="1.8"
+              className="cpu-viz-text-muted"
+            >
+              Storage
             </text>
           </g>
 
-          {/* === CONNECTION LINES (semi-transparent) === */}
-          {/* Memory -> Bus -> CPU (inflow) */}
-          <polyline
-            points="75,12 55,12 35,18"
-            fill="none"
-            stroke="rgba(37, 99, 235, 0.75)"
-            strokeWidth="0.8"
-            strokeOpacity="0.25"
-            strokeLinecap="round"
-          />
-          {/* CPU -> Bus -> Memory (outflow) */}
-          <polyline
-            points="25,25 45,28 75,20"
-            fill="none"
-            stroke="rgba(220, 38, 38, 0.85)"
-            strokeWidth="0.8"
-            strokeOpacity="0.25"
-            strokeLinecap="round"
-          />
+          {/* === CONNECTION LINES (REMOVED: only dots remain) === */}
+          {/* (blue/red polylines were here; they are now removed) */}
 
-          {/* === FLOWING BYTES (dots) === */}
-          {/* Inflow: Memory -> Bus -> CPU */}
-          <circle
-            ref={inflowDotRef}
-            r="1.1"
-            fill="#2563eb"
-            stroke="#1d4ed8"
-            strokeWidth="0.3"
-          />
+          {/* === FLOWING BYTES (dots only) === */}
+          {/* Inflow: Memory -> Bus -> CPU (blue dots) */}
+          {Array.from({ length: INFLOW_DOTS }).map((_, i) => (
+            <circle
+              key={`inflow-dot-${i}`}
+              ref={(el) => {
+                inflowDotsRef.current[i] = el;
+              }}
+              r="0.4"
+              fill="#3925ebe0"
+              stroke="#1d4ed8"
+              strokeWidth="0.25"
+            />
+          ))}
 
-          {/* Outflow: CPU -> Bus -> Memory */}
-          <circle
-            ref={outflowDotRef}
-            r="1.1"
-            fill="#ef4444"
-            stroke="#b91c1c"
-            strokeWidth="0.3"
-          />
+          {/* Outflow: CPU -> Bus -> Memory (red dots) */}
+          {Array.from({ length: OUTFLOW_DOTS }).map((_, i) => (
+            <circle
+              key={`outflow-dot-${i}`}
+              ref={(el) => {
+                outflowDotsRef.current[i] = el;
+              }}
+              r="0.4"
+              fill="#ef4444dd"
+              stroke="#b91c1c"
+              strokeWidth="0.25"
+            />
+          ))}
         </svg>
 
         {/* Tooltip positioned relative to logical coordinates */}

@@ -1,3 +1,4 @@
+// frontend/src/components/ConfigForm.jsx
 import React, { useState } from "react";
 
 const SliderField = ({
@@ -72,7 +73,7 @@ const ConfigForm = ({
   onLoadPredefined,
   isSimulating
 }) => {
-  const [mode, setMode] = useState("simple");
+  const [mode, setMode] = useState("simple"); // "simple" | "advanced"
   const isSimple = mode === "simple";
 
   return (
@@ -118,6 +119,7 @@ const ConfigForm = ({
         </div>
       </div>
 
+      {/* Sections for nicer visual grouping */}
       <div className="config-sections">
         {/* Cache */}
         <section className="config-section">
@@ -245,7 +247,7 @@ const ConfigForm = ({
           </div>
         </section>
 
-        {/* Registers & Bus*/}
+        {/* Registers & Bus (advanced) */}
         {!isSimple && (
           <section className="config-section">
             <h3 className="config-section-title">Registers & Bus</h3>

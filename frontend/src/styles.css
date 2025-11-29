@@ -473,6 +473,16 @@ body {
   user-select: none;
 }
 
+/* CPU Dataflow Visualization text colors (theme-aware) */
+.cpu-flow-container svg .cpu-viz-text-main {
+  fill: var(--text);
+}
+
+.cpu-flow-container svg .cpu-viz-text-muted {
+  fill: var(--text-muted);
+}
+
+
 /* Legend */
 .cpu-viz-legend {
   margin-top: 0.5rem;
@@ -512,4 +522,136 @@ body {
   }
 }
 
+.power-analysis-box {
+  margin-top: 20px;
+  padding: 20px;
+  background: var(--panel-bg);
+  border-radius: 12px;
+}
+
+.big-number strong {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.branch-analysis-box {
+  margin-top: 24px;
+  padding: 20px;
+  border-radius: 12px;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+}
+
+.branch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+}
+
+.branch-item strong {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* Simulation Results – Analysis sections (Power & Branch) */
+
+.results-analysis-section {
+  margin-top: 1.5rem;
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  background: var(--panel-bg);
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+}
+
+.results-analysis-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.results-analysis-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.results-analysis-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+/* Parameter (left) */
+.results-analysis-label {
+  flex: 1;
+  text-align: left;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* Value (right) */
+.results-analysis-value {
+  text-align: right;
+  font-feature-settings: "tnum" 1; /* tabular numbers for nicer alignment */
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent);
+  min-width: 6rem;
+}
+
+/* Slightly softer value color in dark mode, still using accent as base */
+:root[data-theme="dark"] .results-analysis-section {
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
+}
+
+:root[data-theme="dark"] .results-analysis-label {
+  color: var(--text-muted);
+}
+
+:root[data-theme="dark"] .results-analysis-value {
+  color: var(--accent);
+}
+
+/* === Simulation Results – KPI row (Performance, IPC, Efficiency) === */
+
+.results-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+  margin: 0.75rem 0 1.25rem;
+}
+
+.results-kpi-card {
+  border-radius: 0.8rem;
+  padding: 0.75rem 0.9rem;
+  border: 1.5px solid var(--border);
+  background: transparent; /* same as panel background */
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.results-kpi-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.results-kpi-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.1;
+}
+
+.results-kpi-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
 
