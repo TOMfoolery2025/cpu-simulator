@@ -1,4 +1,3 @@
-// frontend/src/components/ConfigForm.jsx
 import React, { useState } from "react";
 
 const SliderField = ({
@@ -121,6 +120,23 @@ const ConfigForm = ({
 
       {/* Sections for nicer visual grouping */}
       <div className="config-sections">
+        <section className="config-section">
+          <h3 className="config-section-title">Workload</h3>
+          <div className="config-grid">
+            <SliderField
+              label="Number of instructions"
+              name="num_instructions"
+              value={config.num_instructions}
+              onChange={onChange}
+              min={100000}
+              max={20000000}
+              step={100000}
+              unit=""
+              tooltip="Total dynamic instruction count for execution-time & stall estimates"
+            />
+          </div>
+        </section>
+
         {/* Cache */}
         <section className="config-section">
           <h3 className="config-section-title">Cache</h3>
@@ -158,6 +174,56 @@ const ConfigForm = ({
               unit="-way"
               tooltip="Higher associativity reduces conflict misses, but increases hit time"
             />
+            {/* L2 / L3 cache (Advanced only) */}
+            {!isSimple && (
+              <>
+                <SliderField
+                  label="L2 cache size"
+                  name="l2_cache_size_kb"
+                  value={config.l2_cache_size_kb}
+                  onChange={onChange}
+                  min={0}
+                  max={1024}
+                  step={16}
+                  unit="KB"
+                  tooltip="Unified L2 cache size; 0 disables the level"
+                />
+                <SliderField
+                  label="L2 hit time"
+                  name="l2_cache_hit_time_ns"
+                  value={config.l2_cache_hit_time_ns}
+                  onChange={onChange}
+                  min={1}
+                  max={20}
+                  step={0.5}
+                  unit="ns"
+                  tooltip="Approximate latency to access L2 cache"
+                />
+                <SliderField
+                  label="L3 cache size"
+                  name="l3_cache_size_kb"
+                  value={config.l3_cache_size_kb}
+                  onChange={onChange}
+                  min={0}
+                  max={4096}
+                  step={32}
+                  unit="KB"
+                  tooltip="Last-level cache size; 0 disables the level"
+                />
+                <SliderField
+                  label="L3 hit time"
+                  name="l3_cache_hit_time_ns"
+                  value={config.l3_cache_hit_time_ns}
+                  onChange={onChange}
+                  min={5}
+                  max={40}
+                  step={1}
+                  unit="ns"
+                  tooltip="Approximate latency to access L3 cache"
+                />
+              </>
+            )}
+
           </div>
         </section>
 
@@ -322,6 +388,7 @@ const ConfigForm = ({
               onChange={onChange}
               tooltip="Better predictors reduce branch mispredict stalls"
               options={[
+                { value: "off", label: "Off (no prediction)" },
                 { value: "static", label: "Static" },
                 { value: "bimodal", label: "Bimodal (2-bit)" },
                 { value: "tournament", label: "Tournament" }

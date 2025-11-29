@@ -19,7 +19,13 @@ const defaultConfig = {
   pipeline_depth: 14,
   issue_width: 4,
   alu_width_bits: 64,
-  branch_predictor: "bimodal"
+  branch_predictor: "bimodal",
+  l2_cache_size_kb: 0,
+  l2_cache_hit_time_ns: 4,
+  l3_cache_size_kb: 0,
+  l3_cache_hit_time_ns: 12,
+  num_instructions: 1000000,
+
 };
 
 const SimulatorPage = () => {

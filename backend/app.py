@@ -106,6 +106,12 @@ def api_simulate():
         issue_width=int(data.get("issue_width", 4)),
         alu_width_bits=int(data.get("alu_width_bits", 64)),
         branch_predictor=str(data.get("branch_predictor", "bimodal")),
+        l2_cache_size_kb=float(data.get("l2_cache_size_kb", 0.0)),
+        l2_cache_hit_time_ns=float(data.get("l2_cache_hit_time_ns", 4.0)),
+        l3_cache_size_kb=float(data.get("l3_cache_size_kb", 0.0)),
+        l3_cache_hit_time_ns=float(data.get("l3_cache_hit_time_ns", 12.0)),
+        num_instructions=int(data.get("num_instructions", 1_000_000)),
+
     )
     result = simulate(cfg)
     return jsonify(result)
